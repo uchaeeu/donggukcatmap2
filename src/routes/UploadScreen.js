@@ -21,11 +21,11 @@ function UploadScreen() {
 
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    
+
     const [title, setTitle] = useState('');
     const [comment, setComment] = useState('');
 
-    const [tags, setTags] = useState(null);
+    const [tag, setTags] = useState(null);
 
     const fileInputRef = useRef(null);
 
@@ -63,7 +63,7 @@ function UploadScreen() {
             alert('이미지, 제목, 내용을 모두 입력해주세요');
             return;
         }
-        
+
         // Supabase에 이미지 업로드
         const fileName = `${Date.now()}_${imageFile.name}`;
         const {data, error} = await supabase.storage
@@ -86,16 +86,16 @@ function UploadScreen() {
 
         // FastAPI 서버로 POST 요청
         try {
-            const response = await fetch('http://localhost:3000/api/posts', {
+            const response = await fetch('http://localhost:8000/api/posts', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     image_url: imageUrl,
                     title,
-                    comment: comment,
+                    content: comment,
                     latitude,
                     longitude,
-                    tags: ""
+                    tag: tag || ""
                 }),
             });
 
@@ -111,16 +111,16 @@ function UploadScreen() {
     return (
         <div className={styles.pageContainer}>
             <div className={styles.cardContainer}>
-                <FormHeader/> 
+                <FormHeader/>
                 <FormUploadArea
                     imagePreview={imagePreview}
                     fileInputRef={fileInputRef}
                     handleFileChange={handleFileChange}
-                /> 
+                />
                 <div className={styles.formSections}>
                     <FormTitle
                         title={title}
-                        setTitle={setTitle}    
+                        setTitle={setTitle}
                     />
                     <FormLocationLink/>
                     <FormComment
@@ -130,7 +130,7 @@ function UploadScreen() {
                     <FormTagSelector/>
                 </div>
                 <FormUploadButton onUpload={handleUpload}/>
-            </div> 
+            </div>
         </div>
     );
 }
